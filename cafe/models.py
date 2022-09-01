@@ -19,14 +19,13 @@ class Address(models.Model):
     doro = models.CharField(max_length=40)
     doro_code = models.CharField(max_length=80)
     sangse = models.CharField(max_length=165, null=True)
-    update_date = models.DateTimeField(null=True)
+    update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address',null=True, blank=True)
     
 
 class Menu(models.Model):
     image_url = models.CharField(max_length=2000)
-    menu_detail_id = models.IntegerField(default=0, null=True)
     name = models.CharField(max_length=40)
     price = models.IntegerField(default=0, null=True)
-    update_date = models.DateTimeField(null=True)
+    update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu',null=True, blank=True)

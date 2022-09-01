@@ -10,4 +10,4 @@ from .models import Cafe
 class CafeViewset(viewsets.ModelViewSet):
     queryset = Cafe.objects.all()
     serializer_class = CafeSerializer
-    http_method_names = ['get', 'post', 'retrieve', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch']
