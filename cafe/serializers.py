@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import IntegrityError
 from rest_framework import serializers
 from .models import Cafe, Address, Menu
 
@@ -16,6 +16,27 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class CafeSerializer(serializers.ModelSerializer):
+    """
+        1. 3개 테이블 인서트 쿼리:
+            1.1 
+            INSERT INTO cafe_cafe(name, name_en, phone, hours, sns, create_date) \
+                VALUES('공지은', 'Kong', '01012341234', '{"mon":"9-6"}', '{"instagram":"instagram.com"}', CURRENT_TIMESTAMP);
+            1.2
+            INSERT INTO cafe_address(latitude, longtitude, sido, sigungu, doro, doro_code, sangse, cafe_id, update_date) \
+                VALUES(1 ,1, 'b', 'b', 'b', 0, 'b', 5, CURRENT_TIMESTAMP);
+            1.3
+            INSERT INTO cafe_menu(image_url, name, price, cafe_id, update_date) VALUES('test', 'latte', 6000, 5, CURRENT_TIMESTAMP);
+        2. 3개 테이블 조회 쿼리:
+            SELECT
+            cafe_cafe.*,
+            cafe_address.*,
+            cafe_menu.*
+            FROM cafe_cafe
+            JOIN cafe_address
+            ON cafe_cafe.id = cafe_address.cafe_id
+            JOIN cafe_menu
+            ON cafe_cafe.id = cafe_menu.cafe_id;
+    """
     address = AddressSerializer(many=True)
     menu = MenuSerializer(many=True)
 
@@ -27,9 +48,12 @@ class CafeSerializer(serializers.ModelSerializer):
         address = validated_data.pop('address')
         menues = validated_data.pop('menu')
         
-        cafe_instance = Cafe.objects.create(**validated_data)
+        try:
+            cafe_instance = Cafe.objects.create(**validated_data)
+        except IntegrityError:
+            raise serializers.ValidationError({"msg": "duplicate"})
+            
         Address.objects.create(cafe=cafe_instance, **address[0])
-        
         for menu in menues:
             Menu.objects.create(cafe=cafe_instance, **menu)
         
@@ -65,3 +89,4 @@ class CafeSerializer(serializers.ModelSerializer):
                 Menu.objects.create(cafe=instance, **menu) 
 
         return instance
+        
