@@ -1,9 +1,11 @@
 from django.db import models
-from .validators import *
+from .validators import CustomValidator
+
+cv = CustomValidator()
 
 class Cafe(models.Model):
-    name = models.CharField(max_length=165, validators=[validate_korean_digit()])
-    name_en = models.CharField(max_length=300, validators=[validate_slug])
+    name = models.CharField(max_length=165, validators=[cv.korean_digit()])
+    name_en = models.CharField(max_length=300, validators=[cv.unicode_digit()])
     phone = models.CharField(max_length=12, null=True, blank=True, validators=[])
     hours = models.JSONField(default=dict, null=True, validators=[])
     sns = models.JSONField(default=dict, null=True, validators=[])
@@ -20,15 +22,15 @@ class Cafe(models.Model):
         ]
 
 class Address(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[validate_decimal(6, 9)])
-    longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[validate_decimal(6, 9)])
-    sido = models.CharField(max_length=40, validators=[validate_korean()])
-    sigungu = models.CharField(max_length=40, validators=[validate_korean()])
-    doro = models.CharField(max_length=40, validators=[validate_korean()])
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
+    longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
+    sido = models.CharField(max_length=40, validators=[cv.korean()])
+    sigungu = models.CharField(max_length=40, validators=[cv.korean()])
+    doro = models.CharField(max_length=40, validators=[cv.korean()])
     doro_code = models.CharField(max_length=80, validators=[])
-    sangse = models.CharField(max_length=165, null=True, validators=[validate_korean_digit()])
+    sangse = models.CharField(max_length=165, null=True, validators=[cv.korean_digit()])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address',null=True, blank=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
 
     class Meta:
         """
@@ -40,11 +42,11 @@ class Address(models.Model):
         ]
 
 class Menu(models.Model):
-    image_url = models.CharField(max_length=2000, validators=[validate_URL()])
-    name = models.CharField(max_length=40, validators=[validate_korean_unicode_digit()])
-    price = models.IntegerField(default=0, null=True, validators=[validate_korean_unicode_digit()])
+    image_url = models.CharField(max_length=2000, validators=[cv.url()])
+    name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
+    price = models.IntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu',null=True, blank=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
 
     class Meta:
         """

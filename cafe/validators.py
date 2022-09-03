@@ -1,20 +1,33 @@
 from django.core.validators import URLValidator, DecimalValidator, RegexValidator, validate_slug
 
-def validate_korean():
-    return RegexValidator(r"^[-ㄱ-힣_]+\Z")
 
-def validate_korean_digit():
-    return RegexValidator(r"^[-ㄱ-힣0-9_]+\Z")
+class CustomValidator:
+    def korean(self):
+        return RegexValidator(r"^[-ㄱ-힣_]+\Z")
+    
+    def korean_digit(self):
+        return RegexValidator(r"^[-ㄱ-힣0-9_]+\Z")
 
-def validate_korean_unicode():
-    return RegexValidator(r"^[-ㄱ-힣a-zA-Z_]+\Z")
+    def korean_unicode(self):
+        return RegexValidator(r"^[-ㄱ-힣a-zA-Z_]+\Z")
 
-def validate_korean_unicode_digit():
-    return RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")
+    def korean_unicode_digit(self):
+        return RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")
 
-def validate_URL():
-    return URLValidator()
+    def unicode_digit(self):
+        return validate_slug
+    
+    def decimal(self, max, place):
+        return DecimalValidator(max, place)
 
-def validate_decimal(max, places):
-    return DecimalValidator(max, places)
+    def url(self):
+        return URLValidator()
+    
+    def phone(self):
+        return ''
+    
+    def sns(self):
+        return ''
 
+    def hours(self):
+        return ''
