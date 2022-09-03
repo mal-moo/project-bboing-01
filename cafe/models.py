@@ -1,8 +1,8 @@
 from django.db import models
-from django.core.validators import validate_slug, URLValidator, DecimalValidator, RegexValidator
+from .validators import *
 
 class Cafe(models.Model):
-    name = models.CharField(max_length=165, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")])
+    name = models.CharField(max_length=165, validators=[validate_korean_digit()])
     name_en = models.CharField(max_length=300, validators=[validate_slug])
     phone = models.CharField(max_length=12, null=True, blank=True, validators=[])
     hours = models.JSONField(default=dict, null=True, validators=[])
@@ -20,13 +20,13 @@ class Cafe(models.Model):
         ]
 
 class Address(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[DecimalValidator(6, 9)])
-    longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[DecimalValidator(6, 9)])
-    sido = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
-    sigungu = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
-    doro = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[validate_decimal(6, 9)])
+    longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[validate_decimal(6, 9)])
+    sido = models.CharField(max_length=40, validators=[validate_korean()])
+    sigungu = models.CharField(max_length=40, validators=[validate_korean()])
+    doro = models.CharField(max_length=40, validators=[validate_korean()])
     doro_code = models.CharField(max_length=80, validators=[])
-    sangse = models.CharField(max_length=165, null=True, validators=[RegexValidator(r"^[-ㄱ-힣0-9_]+\Z")])
+    sangse = models.CharField(max_length=165, null=True, validators=[validate_korean_digit()])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address',null=True, blank=True)
 
@@ -40,9 +40,9 @@ class Address(models.Model):
         ]
 
 class Menu(models.Model):
-    image_url = models.CharField(max_length=2000, validators=[URLValidator()])
-    name = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")])
-    price = models.IntegerField(default=0, null=True, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z_]+\Z")])
+    image_url = models.CharField(max_length=2000, validators=[validate_URL()])
+    name = models.CharField(max_length=40, validators=[validate_korean_unicode_digit()])
+    price = models.IntegerField(default=0, null=True, validators=[validate_korean_unicode_digit()])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu',null=True, blank=True)
 
