@@ -11,6 +11,7 @@ class CafeViewset(viewsets.ModelViewSet):
     serializer_class = CafeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
+    # Response를 커스텀하려면 오버라이딩 작업이 필요하다.
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
