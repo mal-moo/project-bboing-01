@@ -41,7 +41,7 @@ class CafeSerializer(serializers.ModelSerializer):
     menu = MenuSerializer(many=True)
 
     class Meta:
-        fields = ('name', 'name_en', 'phone', 'hours', 'sns', 'create_date', 'address', 'menu')
+        fields = ('id', 'name', 'name_en', 'phone', 'hours', 'sns', 'create_date', 'address', 'menu')
         model = Cafe
 
     def create(self, validated_data):

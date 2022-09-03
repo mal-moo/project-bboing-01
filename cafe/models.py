@@ -1,12 +1,12 @@
 from django.db import models
-
+from django.core.validators import validate_slug, URLValidator, DecimalValidator, RegexValidator
 
 class Cafe(models.Model):
-    name = models.CharField(max_length=165)
-    name_en = models.CharField(max_length=300)
-    phone = models.CharField(max_length=12, null=True, blank=True)
-    hours = models.JSONField(default=dict, null=True)
-    sns = models.JSONField(default=dict, null=True)
+    name = models.CharField(max_length=165, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")])
+    name_en = models.CharField(max_length=300, validators=[validate_slug])
+    phone = models.CharField(max_length=12, null=True, blank=True, validators=[])
+    hours = models.JSONField(default=dict, null=True, validators=[])
+    sns = models.JSONField(default=dict, null=True, validators=[])
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(null=True)
 
@@ -20,13 +20,13 @@ class Cafe(models.Model):
         ]
 
 class Address(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longtitude = models.DecimalField(max_digits=9, decimal_places=6)
-    sido = models.CharField(max_length=40)
-    sigungu = models.CharField(max_length=40)
-    doro = models.CharField(max_length=40)
-    doro_code = models.CharField(max_length=80)
-    sangse = models.CharField(max_length=165, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[DecimalValidator(6, 9)])
+    longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[DecimalValidator(6, 9)])
+    sido = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
+    sigungu = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
+    doro = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣_]+\Z")])
+    doro_code = models.CharField(max_length=80, validators=[])
+    sangse = models.CharField(max_length=165, null=True, validators=[RegexValidator(r"^[-ㄱ-힣0-9_]+\Z")])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address',null=True, blank=True)
 
@@ -40,9 +40,9 @@ class Address(models.Model):
         ]
 
 class Menu(models.Model):
-    image_url = models.CharField(max_length=2000)
-    name = models.CharField(max_length=40)
-    price = models.IntegerField(default=0, null=True)
+    image_url = models.CharField(max_length=2000, validators=[URLValidator()])
+    name = models.CharField(max_length=40, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z0-9_]+\Z")])
+    price = models.IntegerField(default=0, null=True, validators=[RegexValidator(r"^[-ㄱ-힣a-zA-Z_]+\Z")])
     update_date = models.DateTimeField(null=True, auto_now_add=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu',null=True, blank=True)
 
@@ -50,7 +50,8 @@ class Menu(models.Model):
         """
         제약사항:
             1. cafe_id가 같은 경우, 중복된 name은 없어야한다.
+            2. image_url이 cafe_id당 1개만 있으면 되지않을까?
         """
         constraints = [
-            models.UniqueConstraint(fields=['name', 'cafe'], name='unique_name_cafe'),
+             models.UniqueConstraint(fields=['name', 'cafe'], name='unique_name_cafe'),
         ]
