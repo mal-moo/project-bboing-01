@@ -74,14 +74,6 @@ class MenuImage(models.Model):
     class Meta:
         db_table = 'cafe_menu_image'
         
-        """
-        제약사항:
-            1. cafe_id가 같은 경우, 중복된 image_url 없어야한다.
-        """
-        constraints = [
-             models.UniqueConstraint(fields=['image_url', 'cafe'], name='unique_image_url_cafe'),
-        ]
-        
 
 class Franchise(models.Model):
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', null=True, blank=True)
