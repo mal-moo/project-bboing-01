@@ -3,14 +3,18 @@ from .validators import CustomValidator
 
 cv = CustomValidator()
 
+
 class Cafe(models.Model):
-    name = models.CharField(max_length=165, validators=[cv.korean_digit()])
-    name_en = models.CharField(max_length=300, validators=[cv.unicode_digit()])
-    phone = models.CharField(max_length=12, null=True, blank=True, validators=[])
-    hours = models.JSONField(default=dict, null=True, validators=[])
-    sns = models.JSONField(default=dict, null=True, validators=[])
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(null=True)
+    name = models.CharField(max_length=165)
+    sub_names = models.CharField(max_length=300, null=True)
+    is_operated = models.BooleanField(default=True)
+    is_franchising = models.BooleanField(default=False)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    hours = models.JSONField(default=dict, null=True, blank=True)
+    sns = models.JSONField(default=dict, null=True, blank=True)
+    registrant = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         """
@@ -21,39 +25,75 @@ class Cafe(models.Model):
             models.UniqueConstraint(fields=['name'], name='unique_name'),
         ]
 
+
 class Address(models.Model):
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     sido = models.CharField(max_length=40, validators=[cv.korean()])
     sigungu = models.CharField(max_length=40, validators=[cv.korean()])
     doro = models.CharField(max_length=40, validators=[cv.korean()])
-    doro_code = models.CharField(max_length=80, validators=[])
+    doro_code = models.CharField(max_length=10, validators=[])
     sangse = models.CharField(max_length=165, null=True, validators=[cv.korean_digit()])
-    update_date = models.DateTimeField(null=True, auto_now_add=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
         """
         제약사항:
             1. 중복된 (latitude, longtitude) 없어야한다.
         """
         constraints = [
-            models.UniqueConstraint(fields=['latitude', 'longtitude', 'cafe'], name='unique_latitude_longtitude_cafe'),
+            models.UniqueConstraint(fields=['latitude', 'longtitude'], name='unique_latitude_longtitude'),
         ]
 
+
 class Menu(models.Model):
-    image_url = models.CharField(max_length=2000, validators=[cv.url()])
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
     name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
     price = models.IntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
-    update_date = models.DateTimeField(null=True, auto_now_add=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
-
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
         """
         제약사항:
             1. cafe_id가 같은 경우, 중복된 name은 없어야한다.
-            2. image_url이 cafe_id당 1개만 있으면 되지않을까?
         """
         constraints = [
              models.UniqueConstraint(fields=['name', 'cafe'], name='unique_name_cafe'),
+        ]
+
+
+class MenuImage(models.Model):
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu_image', null=True, blank=True)
+    image_url = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'cafe_menu_image'
+        
+        """
+        제약사항:
+            1. cafe_id가 같은 경우, 중복된 image_url 없어야한다.
+        """
+        constraints = [
+             models.UniqueConstraint(fields=['image_url', 'cafe'], name='unique_image_url_cafe'),
+        ]
+        
+
+class Franchise(models.Model):
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', null=True, blank=True)
+    branch_name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        """
+        제약사항:
+            1. cafe_id가 같은 경우, 중복된 branch_name 없어야한다.
+        """
+        constraints = [
+             models.UniqueConstraint(fields=['branch_name', 'cafe'], name='unique_branch_name_cafe'),
         ]
