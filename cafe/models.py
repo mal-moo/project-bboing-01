@@ -67,7 +67,7 @@ class Menu(models.Model):
 
 class MenuImage(models.Model):
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu_image', null=True, blank=True)
-    image_url = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
+    image_url = models.CharField(max_length=2000)
     # created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now_add=True)
     

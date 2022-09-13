@@ -30,8 +30,8 @@ class AddressSerializer(serializers.ModelSerializer):
 class CafeSerializer(serializers.ModelSerializer):
     address = AddressSerializer(many=True)
     menu = MenuSerializer(many=True, required=False, allow_null=True) 
-    franchise = MenuSerializer(many=True, required=False, allow_null=True)
-    menu_image = MenuSerializer(many=True, required=False, allow_null=True)
+    franchise = FranchiseSerializer(many=True, required=False, allow_null=True)
+    menu_image = MenuImageSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
         fields = ('id', 'name', 'sub_names', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
