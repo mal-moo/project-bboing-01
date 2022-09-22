@@ -1,6 +1,6 @@
 from django.db import IntegrityError, transaction
 from rest_framework import serializers
-from .models import Cafe, Address, Menu, MenuImage, Franchise
+from .models import Cafe, Address, CafeSubName, Menu, MenuImage, Franchise
 
 
 class FranchiseSerializer(serializers.ModelSerializer):
@@ -26,20 +26,26 @@ class AddressSerializer(serializers.ModelSerializer):
         model = Address
         fields = '__all__'
 
+class CafeSubNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CafeSubName
+        fields = '__all__'
+
 
 class CafeSerializer(serializers.ModelSerializer):
     address = AddressSerializer(many=True)
     menu = MenuSerializer(many=True, required=False, allow_null=True) 
+    sub_name = CafeSubNameSerializer(many=True, required=False, allow_null=True)
     franchise = FranchiseSerializer(many=True, required=False, allow_null=True)
     menu_image = MenuImageSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
-        fields = ('id', 'name', 'sub_names', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
-            'address', 'menu', 'menu_image', 'franchise')
+        fields = ('cafe_id', 'name', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
+            'sub_name', 'address', 'menu', 'menu_image', 'franchise')
         model = Cafe
 
     def create(self, validated_data):
-        franchise, menues, menu_images = None, [], []
+        sub_names, franchise, menues, menu_images = [], None, [], []
         
         with transaction.atomic():
             address = validated_data.pop('address')
@@ -49,6 +55,8 @@ class CafeSerializer(serializers.ModelSerializer):
                 menues = validated_data.pop('menu')
             if 'menu_image' in validated_data:
                 menu_images = validated_data.pop('menu_image')
+            if 'sub_name' in validated_data:
+                sub_names = validated_data.pop('sub_name')
             
             try:
                 cafe_instance = Cafe.objects.create(**validated_data)
@@ -62,9 +70,13 @@ class CafeSerializer(serializers.ModelSerializer):
 
             if franchise:
                 Franchise.objects.create(cafe=cafe_instance, **franchise[0])
+            
+            for sub_name in sub_names:
+                CafeSubName.objects.create(cafe=cafe_instance, **sub_name)
 
             for menu in menues:
                 Menu.objects.create(cafe=cafe_instance, **menu)
+            
             for menu_image in menu_images:
                 MenuImage.objects.create(cafe=cafe_instance, **menu_image)
             

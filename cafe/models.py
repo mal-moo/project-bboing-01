@@ -5,8 +5,8 @@ cv = CustomValidator()
 
 
 class Cafe(models.Model):
+    cafe_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=165)
-    sub_names = models.CharField(max_length=300, null=True)
     is_operated = models.BooleanField(default=True)
     is_franchising = models.BooleanField(default=False)
     phone = models.CharField(max_length=20, null=True, blank=True)
@@ -25,8 +25,27 @@ class Cafe(models.Model):
             models.UniqueConstraint(fields=['name'], name='unique_name'),
         ]
 
+class CafeSubName(models.Model):
+    sub_name_id = models.BigAutoField(primary_key=True)
+    sub_name = models.CharField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='cafe_subname', null=True, blank=True)
+
+    class Meta:
+        db_table = 'cafe_sub_name'
+
+        """
+        제약사항:
+            1. 같은 cafe_id 안에서 중복된 sub_name은 없어야한다.
+        """
+        constraints = [
+            models.UniqueConstraint(fields=['sub_name', 'cafe'], name='unique_sub_name_cafe'),
+        ]
+
 
 class Address(models.Model):
+    address_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
@@ -49,11 +68,12 @@ class Address(models.Model):
 
 
 class Menu(models.Model):
+    menu_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
     name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
     price = models.IntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         """
@@ -66,20 +86,22 @@ class Menu(models.Model):
 
 
 class MenuImage(models.Model):
+    manu_image_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu_image', null=True, blank=True)
     image_url = models.CharField(max_length=2000)
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         db_table = 'cafe_menu_image'
         
 
 class Franchise(models.Model):
+    franchise_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', null=True, blank=True)
     branch_name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         """
