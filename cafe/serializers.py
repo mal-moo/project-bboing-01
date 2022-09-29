@@ -40,7 +40,7 @@ class CafeSerializer(serializers.ModelSerializer):
     menu_image = MenuImageSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
-        fields = ('cafe_id', 'name', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
+        fields = ('cafe_id', 'main_name', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
             'sub_name', 'address', 'menu', 'menu_image', 'franchise')
         model = Cafe
 

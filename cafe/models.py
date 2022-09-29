@@ -46,7 +46,7 @@ class CafeSubName(models.Model):
 
 class Address(models.Model):
     # address_id = models.BigAutoField(primary_key=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', primary_key=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', primary_key=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     sido = models.CharField(max_length=40, validators=[cv.korean()])
@@ -98,7 +98,7 @@ class MenuImage(models.Model):
 
 class Franchise(models.Model):
     # franchise_id = models.BigAutoField(primary_key=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', primary_key=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', primary_key=True, blank=True)
     branch_name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
