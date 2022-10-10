@@ -3,12 +3,20 @@ from .validators import CustomValidator
 
 cv = CustomValidator()
 
+class UnsignedBigAutoField(models.BigAutoField):
+    
+    def db_type(self, connection):
+        return 'bigint(20) UNSIGNED AUTO_INCREMENT'
+        
+    def rel_db_type(self, connection):
+        return 'bigint(20) UNSIGNED'
+          
 
 class Cafe(models.Model):
-    cafe_id = models.BigAutoField(primary_key=True)
+    cafe_id = UnsignedBigAutoField(primary_key=True)
     main_name = models.CharField(max_length=165)
     is_operated = models.SmallIntegerField(default=True)
-    is_franchising = models.BooleanField(default=False)
+    is_franchise = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, null=True, blank=True)
     hours = models.JSONField(default=dict, null=True, blank=True)
     sns = models.JSONField(default=dict, null=True, blank=True)
@@ -26,7 +34,7 @@ class Cafe(models.Model):
         ]
 
 class CafeSubName(models.Model):
-    sub_name_id = models.BigAutoField(primary_key=True)
+    sub_name_id = UnsignedBigAutoField(primary_key=True)
     sub_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -45,7 +53,6 @@ class CafeSubName(models.Model):
 
 
 class Address(models.Model):
-    # address_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='address', primary_key=True, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
     longtitude = models.DecimalField(max_digits=9, decimal_places=6, validators=[cv.decimal(6, 9)])
@@ -68,7 +75,7 @@ class Address(models.Model):
 
 
 class Menu(models.Model):
-    menu_id = models.BigAutoField(primary_key=True)
+    menu_id = UnsignedBigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
     name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
     price = models.IntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
@@ -86,7 +93,7 @@ class Menu(models.Model):
 
 
 class MenuImage(models.Model):
-    manu_image_id = models.BigAutoField(primary_key=True)
+    manu_image_id = UnsignedBigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu_image', null=True, blank=True)
     image_url = models.CharField(max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,7 +104,6 @@ class MenuImage(models.Model):
         
 
 class Franchise(models.Model):
-    # franchise_id = models.BigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='franchise', primary_key=True, blank=True)
     branch_name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
     created_at = models.DateTimeField(auto_now_add=True)
