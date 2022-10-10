@@ -2,31 +2,48 @@ from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from .models import Cafe, Address, CafeSubName, Menu, MenuImage, Franchise
 
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 class FranchiseSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+
     class Meta:
         model = Franchise
         fields = '__all__'
         
         
 class MenuImageSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+
     class Meta:
         model = MenuImage
         fields = '__all__'
 
 
 class MenuSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+
     class Meta:
         model = Menu
         fields = '__all__'
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+
     class Meta:
         model = Address
         fields = '__all__'
 
+
 class CafeSubNameSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+
     class Meta:
         model = CafeSubName
         fields = '__all__'
@@ -38,6 +55,8 @@ class CafeSerializer(serializers.ModelSerializer):
     sub_name = CafeSubNameSerializer(many=True, required=False, allow_null=True)
     franchise = FranchiseSerializer(many=True, required=False, allow_null=True)
     menu_image = MenuImageSerializer(many=True, required=False, allow_null=True)
+    created_at = serializers.DateTimeField(format=DATETIME_FORMAT)
+    updated_at = serializers.DateTimeField(format=DATETIME_FORMAT)
 
     class Meta:
         fields = ('cafe_id', 'main_name', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
