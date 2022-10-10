@@ -38,7 +38,7 @@ class CafeSubName(models.Model):
     sub_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='cafe_sub_name', null=True, blank=True)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='sub_name', null=True, blank=True)
 
     class Meta:
         db_table = 'cafe_sub_name'
