@@ -78,7 +78,7 @@ class Menu(models.Model):
     menu_id = UnsignedBigAutoField(primary_key=True)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='menu', null=True, blank=True)
     name = models.CharField(max_length=40, validators=[cv.korean_unicode_digit()])
-    price = models.IntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
+    price = models.PositiveIntegerField(default=0, null=True, validators=[cv.korean_unicode_digit()])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     

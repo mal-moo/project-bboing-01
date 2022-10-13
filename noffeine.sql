@@ -289,14 +289,15 @@ DROP TABLE IF EXISTS `cafe_menu`;
 CREATE TABLE `cafe_menu` (
   `menu_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) NOT NULL,
-  `price` int DEFAULT NULL,
+  `price` int unsigned DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   `cafe_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`menu_id`),
   UNIQUE KEY `unique_name_cafe` (`name`,`cafe_id`),
   KEY `cafe_menu_cafe_id_41905e6f_fk` (`cafe_id`),
-  CONSTRAINT `cafe_menu_cafe_id_41905e6f_fk` FOREIGN KEY (`cafe_id`) REFERENCES `cafe_cafe` (`cafe_id`)
+  CONSTRAINT `cafe_menu_cafe_id_41905e6f_fk` FOREIGN KEY (`cafe_id`) REFERENCES `cafe_cafe` (`cafe_id`),
+  CONSTRAINT `cafe_menu_price_0e250444_check` CHECK ((`price` >= 0))
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -442,7 +443,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -451,7 +452,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2022-07-18 22:14:27.744160'),(2,'auth','0001_initial','2022-07-18 22:14:27.816524'),(3,'admin','0001_initial','2022-07-18 22:14:27.836412'),(4,'admin','0002_logentry_remove_auto_add','2022-07-18 22:14:27.839269'),(5,'admin','0003_logentry_add_action_flag_choices','2022-07-18 22:14:27.842069'),(6,'contenttypes','0002_remove_content_type_name','2022-07-18 22:14:27.856033'),(7,'auth','0002_alter_permission_name_max_length','2022-07-18 22:14:27.865586'),(8,'auth','0003_alter_user_email_max_length','2022-07-18 22:14:27.877363'),(9,'auth','0004_alter_user_username_opts','2022-07-18 22:14:27.880193'),(10,'auth','0005_alter_user_last_login_null','2022-07-18 22:14:27.889685'),(11,'auth','0006_require_contenttypes_0002','2022-07-18 22:14:27.890305'),(12,'auth','0007_alter_validators_add_error_messages','2022-07-18 22:14:27.893046'),(13,'auth','0008_alter_user_username_max_length','2022-07-18 22:14:27.903670'),(14,'auth','0009_alter_user_last_name_max_length','2022-07-18 22:14:27.913641'),(15,'auth','0010_alter_group_name_max_length','2022-07-18 22:14:27.922059'),(16,'auth','0011_update_proxy_permissions','2022-07-18 22:14:27.924708'),(17,'auth','0012_alter_user_first_name_max_length','2022-07-18 22:14:27.936806'),(18,'sessions','0001_initial','2022-07-18 22:14:27.942417'),(44,'cafe','0001_initial','2022-09-29 13:43:57.238050'),(45,'cafe','0002_alter_address_cafe','2022-09-29 13:53:51.290466'),(46,'cafe','0003_alter_franchise_cafe','2022-09-29 13:54:14.785792'),(47,'cafe','0004_rename_is_franchising_cafe_is_franchise','2022-10-10 08:00:00.982706'),(48,'cafe','0005_alter_cafe_cafe_id','2022-10-10 08:00:01.122802'),(49,'cafe','0006_alter_cafesubname_sub_name_id_alter_menu_menu_id_and_more','2022-10-10 08:01:29.881985'),(50,'cafe','0005_alter_cafe_cafe_id_alter_cafesubname_sub_name_id_and_more','2022-10-10 08:06:00.524744');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2022-07-18 22:14:27.744160'),(2,'auth','0001_initial','2022-07-18 22:14:27.816524'),(3,'admin','0001_initial','2022-07-18 22:14:27.836412'),(4,'admin','0002_logentry_remove_auto_add','2022-07-18 22:14:27.839269'),(5,'admin','0003_logentry_add_action_flag_choices','2022-07-18 22:14:27.842069'),(6,'contenttypes','0002_remove_content_type_name','2022-07-18 22:14:27.856033'),(7,'auth','0002_alter_permission_name_max_length','2022-07-18 22:14:27.865586'),(8,'auth','0003_alter_user_email_max_length','2022-07-18 22:14:27.877363'),(9,'auth','0004_alter_user_username_opts','2022-07-18 22:14:27.880193'),(10,'auth','0005_alter_user_last_login_null','2022-07-18 22:14:27.889685'),(11,'auth','0006_require_contenttypes_0002','2022-07-18 22:14:27.890305'),(12,'auth','0007_alter_validators_add_error_messages','2022-07-18 22:14:27.893046'),(13,'auth','0008_alter_user_username_max_length','2022-07-18 22:14:27.903670'),(14,'auth','0009_alter_user_last_name_max_length','2022-07-18 22:14:27.913641'),(15,'auth','0010_alter_group_name_max_length','2022-07-18 22:14:27.922059'),(16,'auth','0011_update_proxy_permissions','2022-07-18 22:14:27.924708'),(17,'auth','0012_alter_user_first_name_max_length','2022-07-18 22:14:27.936806'),(18,'sessions','0001_initial','2022-07-18 22:14:27.942417'),(44,'cafe','0001_initial','2022-09-29 13:43:57.238050'),(45,'cafe','0002_alter_address_cafe','2022-09-29 13:53:51.290466'),(46,'cafe','0003_alter_franchise_cafe','2022-09-29 13:54:14.785792'),(47,'cafe','0004_rename_is_franchising_cafe_is_franchise','2022-10-10 08:00:00.982706'),(48,'cafe','0005_alter_cafe_cafe_id','2022-10-10 08:00:01.122802'),(49,'cafe','0006_alter_cafesubname_sub_name_id_alter_menu_menu_id_and_more','2022-10-10 08:01:29.881985'),(50,'cafe','0005_alter_cafe_cafe_id_alter_cafesubname_sub_name_id_and_more','2022-10-10 08:06:00.524744'),(51,'cafe','0006_alter_cafesubname_cafe_alter_menu_price','2022-10-13 11:36:45.995081');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -489,4 +490,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-10 17:06:59
+-- Dump completed on 2022-10-13 20:37:58
