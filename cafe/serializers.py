@@ -6,8 +6,8 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 class FranchiseSerializer(ModelSerializer):
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         model = Franchise
@@ -15,8 +15,8 @@ class FranchiseSerializer(ModelSerializer):
     
         
 class MenuImageSerializer(ModelSerializer):
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         model = MenuImage
@@ -24,8 +24,8 @@ class MenuImageSerializer(ModelSerializer):
 
 
 class MenuSerializer(ModelSerializer):
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         model = Menu
@@ -33,8 +33,8 @@ class MenuSerializer(ModelSerializer):
 
 
 class AddressSerializer(ModelSerializer):
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         model = Address
@@ -42,8 +42,8 @@ class AddressSerializer(ModelSerializer):
 
 
 class CafeSubNameSerializer(ModelSerializer):
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         model = CafeSubName
@@ -56,8 +56,8 @@ class CafeSerializer(ModelSerializer):
     sub_name = CafeSubNameSerializer(many=True, required=False, allow_null=True)
     franchise = FranchiseSerializer(many=True, required=False, allow_null=True)
     menu_image = MenuImageSerializer(many=True, required=False, allow_null=True)
-    created_at = DateTimeField(format=DATETIME_FORMAT)
-    updated_at = DateTimeField(format=DATETIME_FORMAT)
+    created_at = DateTimeField(format=DATETIME_FORMAT, required=False)
+    updated_at = DateTimeField(format=DATETIME_FORMAT, required=False)
 
     class Meta:
         fields = ('cafe_id', 'main_name', 'phone', 'hours', 'sns', 'created_at', 'updated_at', \
