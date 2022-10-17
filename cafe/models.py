@@ -1,13 +1,13 @@
 from django.db import models
 from common.models import UnsignedBigAutoField
-from .validators import CustomValidator
+from common.validators import CustomValidator
 
 cv = CustomValidator()
 
 
 class Cafe(models.Model):
     cafe_id = UnsignedBigAutoField(primary_key=True)
-    main_name = models.CharField(max_length=165)
+    main_name = models.CharField(max_length=165, validators=[cv.korean_unicode_digit()])
     is_operated = models.SmallIntegerField(default=True)
     is_franchise = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, null=True, blank=True)

@@ -1,8 +1,8 @@
 from django.db import IntegrityError, transaction
 from rest_framework.serializers import ModelSerializer, DateTimeField, ValidationError
-from .models import Cafe, Address, CafeSubName, Menu, MenuImage, Franchise
 
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+from config.settings import DATETIME_FORMAT
+from .models import Cafe, Address, CafeSubName, Menu, MenuImage, Franchise
 
 
 class FranchiseSerializer(ModelSerializer):
@@ -77,6 +77,12 @@ class CafeSerializer(ModelSerializer):
                 menu_images = validated_data.pop('menu_image')
             if 'sub_name' in validated_data:
                 sub_names = validated_data.pop('sub_name')
+            
+            if len(sub_names) > 3:
+                raise ValidationError({"msg": "overed datas"})
+            
+            if len(menu_images) > 1:
+                raise ValidationError({"msg": "overed datas"})
             
             try:
                 cafe_instance = Cafe.objects.create(**validated_data)
