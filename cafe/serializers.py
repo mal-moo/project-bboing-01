@@ -11,7 +11,8 @@ class FranchiseSerializer(ModelSerializer):
 
     class Meta:
         model = Franchise
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('cafe', )
     
         
 class MenuImageSerializer(ModelSerializer):
@@ -20,7 +21,8 @@ class MenuImageSerializer(ModelSerializer):
 
     class Meta:
         model = MenuImage
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('cafe', )
 
 
 class MenuSerializer(ModelSerializer):
@@ -29,7 +31,8 @@ class MenuSerializer(ModelSerializer):
 
     class Meta:
         model = Menu
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('cafe', )
 
 
 class AddressSerializer(ModelSerializer):
@@ -38,7 +41,8 @@ class AddressSerializer(ModelSerializer):
 
     class Meta:
         model = Address
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('cafe', )
 
 
 class CafeSubNameSerializer(ModelSerializer):
@@ -47,7 +51,8 @@ class CafeSubNameSerializer(ModelSerializer):
 
     class Meta:
         model = CafeSubName
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('cafe', )
 
 
 class CafeSerializer(ModelSerializer):
@@ -81,7 +86,7 @@ class CafeSerializer(ModelSerializer):
             if len(sub_names) > 3:
                 raise ValidationError({"msg": "overed datas"})
             
-            if len(menu_images) > 1:
+            if len(menu_images) > 5:
                 raise ValidationError({"msg": "overed datas"})
             
             try:
@@ -112,39 +117,60 @@ class CafeSerializer(ModelSerializer):
         address = validated_data.pop('address')[0]  
         menues = validated_data.pop('menu')
         menu_images = validated_data.pop('menu_image')
+        sub_names = validated_data.pop('sub_name')
         
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.hours = validated_data.get('hours', instance.hours)
-        instance.sns = validated_data.get('sns', instance.sns)
-        instance.save()
-        
-        if Address.objects.filter(cafe=instance.pk).exists():
-            address_instance = Address.objects.get(cafe=instance.pk)
-            address_instance.latitude = address.get('latitude', address_instance.latitude)
-            address_instance.longtitude = address.get('longtitude', address_instance.longtitude)
-            address_instance.sido = address.get('sido', address_instance.sido)
-            address_instance.doro_code = address.get('doro_code', address_instance.doro_code)
-            address_instance.doro = address.get('doro', address_instance.doro)        
-            address_instance.sigungu = address.get('sigungu', address_instance.sigungu)
-            address_instance.sangse = address.get('sangse', address_instance.sangse)
-            address_instance.save()
+        with transaction.atomic():
 
-        for menu in menues:
-            if Menu.objects.filter(cafe=instance.pk, name=menu['name']).exists():
-                menu_instance = Menu.objects.get(cafe=instance.pk, name=menu['name'])
-                menu_instance.name = menu.get('name', menu_instance.name)
-                menu_instance.price = menu.get('price', menu_instance.price)
-                menu_instance.save()
-            else:
-                Menu.objects.create(cafe=instance, **menu) 
-        
-        for menu_image in menu_images:
-            if MenuImage.objects.filter(cafe=instance.pk, image_url=menu_image['image_url']).exists():
-                menu_image_instance = Menu.objects.get(cafe=instance.pk, image_url=menu_image['image_url'])
-                menu_image_instance.image_url = menu.get('image_url', menu_image_instance.image_url)
-                menu_image_instance.save()
-            else:
-                MenuImage.objects.create(cafe=instance, **menu_image) 
+            instance.phone = validated_data.get('phone', instance.phone)
+            instance.hours = validated_data.get('hours', instance.hours)
+            instance.sns = validated_data.get('sns', instance.sns)
+            instance.save()
+            
+            if CafeSubName.objects.filter(cafe=instance.pk).__len__() > 3:
+                raise ValidationError({"msg": "overed datas"}) 
+
+            if MenuImage.objects.filter(cafe=instance.pk).__len__() > 5:
+                raise ValidationError({"msg": "overed datas"}) 
+
+            try:
+                if Address.objects.filter(cafe=instance.pk).exists():
+                    address_instance = Address.objects.get(cafe=instance.pk)
+                    if address_instance.latitude != address['latitude'] and address_instance.longtitude != address['longtitude']:
+                        address_instance.latitude = address.get('latitude', address_instance.latitude)
+                        address_instance.longtitude = address.get('longtitude', address_instance.longtitude)
+                        address_instance.sido = address.get('sido', address_instance.sido)
+                        address_instance.doro_code = address.get('doro_code', address_instance.doro_code)
+                        address_instance.doro = address.get('doro', address_instance.doro)        
+                        address_instance.sigungu = address.get('sigungu', address_instance.sigungu)
+                        address_instance.sangse = address.get('sangse', address_instance.sangse)
+                        address_instance.save()
+            except IntegrityError:
+                raise ValidationError({"msg": "duplicate"})
+
+            for menu in menues:
+                if Menu.objects.filter(cafe=instance.pk, name=menu['name']).exists():
+                    menu_instance = Menu.objects.get(cafe=instance.pk, name=menu['name'])
+                    menu_instance.name = menu.get('name', menu_instance.name)
+                    menu_instance.price = menu.get('price', menu_instance.price)
+                    menu_instance.save()
+                else:
+                    Menu.objects.create(cafe=instance, **menu) 
+            
+            for menu_image in menu_images:
+                if MenuImage.objects.filter(cafe=instance.pk, image_url=menu_image['image_url']).exists():
+                    menu_image_instance = MenuImage.objects.get(cafe=instance.pk, image_url=menu_image['image_url'])
+                    menu_image_instance.image_url = menu.get('image_url', menu_image_instance.image_url)
+                    menu_image_instance.save()
+                else:
+                    MenuImage.objects.create(cafe=instance, **menu_image) 
+            
+            for sub_name in sub_names:
+                if CafeSubName.objects.filter(cafe=instance.pk, sub_name=sub_name['sub_name']).exists():
+                    sub_name_instance = CafeSubName.objects.get(cafe=instance.pk, sub_name=sub_name['sub_name'])
+                    sub_name_instance.sub_name = sub_name.get('sub_name', sub_name_instance.sub_name)
+                    sub_name_instance.save()
+                else:
+                    CafeSubName.objects.create(cafe=instance, **sub_name) 
 
         return instance
         
